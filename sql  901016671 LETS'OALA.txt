@@ -1,0 +1,1437 @@
+Enter password: ******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 27
+
+CREATE DATABASE TT_Holding_Database_Design;
+
+mysql> use TT_Holding_Database_Design
+Database changed
+
+mysql> CREATE TABLE person (
+    ->     PersonID INT PRIMARY KEY,
+    ->     Name VARCHAR(255),
+    ->     Address VARCHAR(255),
+    ->     Phone VARCHAR(20),
+    ->     BirthDate DATE
+    -> );
+Query OK, 0 rows affected (2.79 sec)
+
+mysql> CREATE TABLE organization (
+    ->     OrgID INT PRIMARY KEY,
+    ->     Name VARCHAR(255),
+    ->     Address VARCHAR(255),
+    ->     Phone VARCHAR(20),
+    ->     BudgetNumber VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.76 sec)
+
+mysql> CREATE TABLE employment (
+    ->     EmploymentID INT PRIMARY KEY,
+    ->     PersonID INT,
+    ->     OrgID INT,
+    ->     EmploymentDate DATE,
+    ->     TerminationDate DATE,
+    ->     Bonus DECIMAL(10, 2),
+    ->     FOREIGN KEY (PersonID) REFERENCES person(PersonID),
+    ->     FOREIGN KEY (OrgID) REFERENCES organization(OrgID)
+    -> );
+Query OK, 0 rows affected (2.51 sec)
+
+
+mysql> CREATE TABLE position (
+    ->     PositionID INT PRIMARY KEY,
+    ->     Title VARCHAR(255),
+    ->     OrgID INT,
+    ->     Salary DECIMAL(10, 2),
+    ->     StartDate DATE,
+    ->     EndDate DATE,
+    ->     EmploymentID INT,
+    ->     FOREIGN KEY (OrgID) REFERENCES organization(OrgID),
+    ->     FOREIGN KEY (EmploymentID) REFERENCES employment(EmploymentID)
+    -> );
+Query OK, 0 rows affected (1.74 sec)
+
+mysql> CREATE TABLE parttimeemployee (
+    ->     PersonID INT PRIMARY KEY,
+    ->     ExtraHours INT,
+    ->     FOREIGN KEY (PersonID) REFERENCES person(PersonID)
+    -> );
+Query OK, 0 rows affected (1.00 sec)
+
+
+mysql> CREATE TABLE permanentemployees (
+    ->     PersonID INT PRIMARY KEY,
+    ->     ExtraBonus DECIMAL(10, 2),
+    ->     Credit DECIMAL(10, 2),
+    ->     FOREIGN KEY (PersonID) REFERENCES person(PersonID)
+    -> );
+Query OK, 0 rows affected (0.61 sec)
+
+mysql> CREATE TABLE useraccountss (
+    ->     UserID INT PRIMARY KEY,
+    ->     Username VARCHAR(255) NOT NULL,
+    ->     Password VARCHAR(255) NOT NULL,
+    ->     Role ENUM('normal', 'admin', 'moderator') NOT NULL,
+    ->     PasswordHash VARCHAR(255) NOT NULL,
+    ->     Email VARCHAR(255) NOT NULL
+    -> );
+Query OK, 0 rows affected (1.25 sec)
+
+
+mysql> show tables;
++--------------------------------------+
+| Tables_in_tt_holding_database_design |
++--------------------------------------+
+| employment                           |
+| organization                         |
+| parttimeemployee                     |
+| permanentemployee                    |
+| person                               |
+| position                             |
+| useraccounts                         |
++--------------------------------------+
+7 rows in set (0.33 sec)
+
+mysql> ALTER TABLE Person MODIFY PersonID INT AUTO_INCREMENT;
+mysql> ALTER TABLE Employment DROP FOREIGN KEY employment_ibfk_1;
+Query OK, 0 rows affected (4.08 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Person (PersonID, Name, Address, Phone, BirthDate) VALUES
+    -> (11, 'Lebohang Mokoena', 'Maseru, Lesotho', '555-0001', '1985-01-15'),
+    -> (12, 'Teboho Khaketla', 'Mafeteng, Lesotho', '555-0002', '1990-05-20'),
+    -> (13, 'Neo Nthabiseng', 'Leribe, Lesotho', '555-0003', '1982-03-12'),
+    -> (14, 'Tshepo Molapo', 'Qacha''s Nek, Lesotho', '555-0004', '1978-11-30'),
+    -> (15, 'Palesa Leshomo', 'Mokhotlong, Lesotho', '555-0005', '1992-07-22'),
+    -> (16, 'Mpho Motsoeneng', 'Maseru, Lesotho', '555-0006', '1987-09-05'),
+    -> (17, 'Thato Mofolo', 'Berea, Lesotho', '555-0007', '1980-12-18'),
+    -> (18, 'Khotso Ramabodu', 'Maseru, Lesotho', '555-0008', '1995-04-25'),
+    -> (19, 'Sipho Letsooa', 'Mafeteng, Lesotho', '555-0009', '1983-08-14'),
+    -> (20, 'Lerato Teboho', 'Maseru, Lesotho', '555-0010', '1991-02-28');
+Query OK, 10 rows affected (0.29 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Organization (OrgID, Name, Address, Phone, BudgetNumber) VALUES
+    -> (11, 'Lesotho Telecom', 'Maseru, Lesotho', '555-0101', 'BUD-LT-01'),
+    -> (12, 'Basotho Mining', 'Berea, Lesotho', '555-0102', 'BUD-BM-02'),
+    -> (13, 'Maseru Tech', 'Maseru, Lesotho', '555-0103', 'BUD-MT-03'),
+    -> (14, 'Lesotho Energy', 'Mokhotlong, Lesotho', '555-0104', 'BUD-LE-04'),
+    -> (15, 'Basotho Finance', 'Leribe, Lesotho', '555-0105', 'BUD-BF-05'),
+    -> (16, 'Lesotho Agriculture', 'Mafeteng, Lesotho', '555-0106', 'BUD-LA-06'),
+    -> (17, 'Basotho Tourism', 'Qacha''s Nek, Lesotho', '555-0107', 'BUD-BT-07'),
+    -> (18, 'Maseru Healthcare', 'Maseru, Lesotho', '555-0108', 'BUD-MH-08'),
+    -> (19, 'Basotho Education', 'Leribe, Lesotho', '555-0109', 'BUD-BE-09'),
+    -> (20, 'Lesotho Construction', 'Butha-Buthe, Lesotho', '555-0110', 'BUD-LC-10');
+Query OK, 10 rows affected (0.24 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Employment (EmploymentID, PersonID, OrgID, EmploymentDate, TerminationDate, Bonus) VALUES
+    -> (11, 1, 1, '2020-01-15', NULL, 1000.00),
+    -> (12, 2, 2, '2021-03-10', NULL, 1500.00),
+    -> (13, 3, 3, '2022-05-05', '2022-12-31', 2000.00),
+    -> (14, 4, 4, '2019-07-20', '2020-03-15', 1200.00),
+    -> (15, 5, 5, '2018-09-10', NULL, 1300.00),
+    -> (16, 6, 6, '2017-04-15', '2018-06-15', 900.00),
+    -> (17, 7, 7, '2020-11-11', NULL, 1100.00),
+    -> (18, 8, 8, '2021-01-01', '2021-12-31', 1400.00),
+    -> (19, 9, 9, '2022-02-02', NULL, 1600.00),
+    -> (20, 10, 10, '2023-03-03', NULL, 1700.00);
+Query OK, 10 rows affected (0.25 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Position (PositionID, Title, OrgID, Salary, StartDate, EndDate, EmploymentID) VALUES
+    -> (11, 'Software Engineer', 1, 75000.00, '2020-01-15', '2021-12-31', 11),
+    -> (12, 'Data Scientist', 2, 80000.00, '2021-04-01', NULL, 12),
+    -> (13, 'Project Manager', 3, 90000.00, '2022-06-15', '2023-06-15', 13),
+    -> (14, 'Business Analyst', 4, 70000.00, '2019-08-01', '2020-08-01', 14),
+    -> (15, 'Marketing Manager', 5, 68000.00, '2018-10-01', NULL, 15),
+    -> (16, 'Accountant', 6, 72000.00, '2017-05-15', '2018-05-15', 16),
+    -> (17, 'HR Specialist', 7, 65000.00, '2020-12-01', NULL, 17),
+    -> (18, 'Operations Director', 8, 85000.00, '2021-02-01', '2022-02-01', 18),
+    -> (19, 'UX/UI Designer', 9, 68000.00, '2022-03-15', NULL, 19),
+    -> (20, 'Quality Assurance Engineer', 10, 64000.00, '2023-04-01', '2024-04-01', 20);
+Query OK, 10 rows affected (0.13 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Person WHERE PersonID IN (1,2,3,4,5,6,7,8,9,10);
++----------+---------------+-----------------+----------+------------+
+| PersonID | Name          | Address         | Phone    | BirthDate  |
++----------+---------------+-----------------+----------+------------+
+|        1 | Alice Johnson | 123 Main St     | 555-1234 | 1985-06-15 |
+|        2 | Bob Smith     | 456 Oak St      | 555-5678 | 1979-08-22 |
+|        3 | Carol White   | 789 Pine St     | 555-9012 | 1990-03-10 |
+|        4 | David Green   | 321 Maple St    | 555-3456 | 1982-11-30 |
+|        5 | Eva Brown     | 654 Elm St      | 555-7890 | 1995-07-25 |
+|        6 | Frank Black   | 987 Cedar St    | 555-2345 | 1988-04-12 |
+|        7 | Grace Adams   | 159 Birch St    | 555-6789 | 1975-09-05 |
+|        8 | Henry Lee     | 753 Walnut St   | 555-0123 | 1980-12-20 |
+|        9 | Ivy Turner    | 852 Spruce St   | 555-4567 | 1992-02-28 |
+|       10 | Jack Hill     | 951 Chestnut St | 555-8910 | 1983-05-17 |
++----------+---------------+-----------------+----------+------------+
+10 rows in set (0.07 sec)
+
+mysql> INSERT INTO PermanentEmployee (PersonID, ExtraBonus, Credit) VALUES
+    -> (1, 500.00, 300.00),
+    -> (2, 750.50, 425.00),
+    -> (3, 600.00, 350.00),
+    -> (4, 800.75, 500.00),
+    -> (5, 900.00, 550.00),
+    -> (6, 650.25, 375.75),
+    -> (7, 720.00, 400.00),
+    -> (8, 850.50, 450.00),
+    -> (9, 700.00, 380.00),
+    -> (10, 950.00, 600.00)
+    -> ON DUPLICATE KEY UPDATE ExtraBonus = VALUES(ExtraBonus), Credit = VALUES(Credit);
+Query OK, 13 rows affected, 2 warnings (0.23 sec)
+Records: 10  Duplicates: 4  Warnings: 2
+
+mysql> INSERT INTO PartTimeEmployee (PersonID, ExtraHours) VALUES
+    -> (1, 10),
+    -> (2, 15),
+    -> (3, 8),
+    -> (4, 20),
+    -> (5, 12),
+    -> (6, 18),
+    -> (7, 14),
+    -> (8, 22),
+    -> (9, 9),
+    -> (10, 16)
+    -> ON DUPLICATE KEY UPDATE ExtraHours = VALUES(ExtraHours);
+Query OK, 13 rows affected, 1 warning (0.44 sec)
+Records: 10  Duplicates: 4  Warnings: 1
+
+mysql> DESC UserAccounts;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| UserID   | int          | NO   | PRI | NULL    |       |
+| Username | varchar(50)  | YES  | UNI | NULL    |       |
+| Password | varchar(255) | YES  |     | NULL    |       |
+| Role     | varchar(50)  | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+4 rows in set (0.59 sec)
+
+mysql> ALTER TABLE UserAccounts ADD COLUMN PasswordHash VARCHAR(255) NOT NULL;
+Query OK, 0 rows affected (1.40 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM UserAccounts;
++--------+----------+-----------+--------+--------------+
+| UserID | Username | Password  | Role   | PasswordHash |
++--------+----------+-----------+--------+--------------+
+|      1 | user1    | password1 | normal |              |
+|      2 | user2    | password2 | normal |              |
++--------+----------+-----------+--------+--------------+
+2 rows in set (0.00 sec)
+
+mysql> DESC UserAccounts;
++--------------+--------------+------+-----+---------+-------+
+| Field        | Type         | Null | Key | Default | Extra |
++--------------+--------------+------+-----+---------+-------+
+| UserID       | int          | NO   | PRI | NULL    |       |
+| Username     | varchar(50)  | YES  | UNI | NULL    |       |
+| Password     | varchar(255) | YES  |     | NULL    |       |
+| Role         | varchar(50)  | YES  |     | NULL    |       |
+| PasswordHash | varchar(255) | NO   |     | NULL    |       |
++--------------+--------------+------+-----+---------+-------+
+5 rows in set (0.10 sec)
+
+mysql> ALTER TABLE UserAccounts ADD COLUMN Email VARCHAR(255) NOT NULL;
+Query OK, 0 rows affected (0.34 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO useraccounts (UserID, Username, Password, Role, PasswordHash, Email) VALUES
+    -> (1, 'user1', '0001', 'normal', 'hash1', 'userlimkokwing@gmail.com'),
+    -> (2, 'user2', '0002', 'normal', 'hash2', 'user2limkokwing@gmail.com'),
+    -> (3, 'user3', '0003', 'normal', 'hash3', 'user3limkokwing@gmail.com'),
+    -> (4, 'user4', '0004', 'normal', 'hash4', 'user4limkokwing@gmail.com'),
+    -> (5, 'user5', '0005', 'admin', 'hash5', 'user5limkokwing@gmail.com'),
+    -> (6, 'user6', '0006', 'normal', 'hash6', 'user6limkokwing@gmail.com'),
+    -> (7, 'user7', '0007', 'normal', 'hash7', 'user7limkokwing@gmail.com'),
+    -> (8, 'user8', '0008', 'moderator', 'hash8', 'user8limkokwing@gmail.com'),
+    -> (9, 'user9', '0009', 'normal', 'hash9', 'user9limkokwing@gmail.com'),
+    -> (10, 'user10', '00010', 'admin', 'hash10', 'user10limkokwing@gmail.com');
+Query OK, 10 rows affected (0.21 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO useraccounts (UserID, Username, Password, Role, PasswordHash, Email) VALUES
+    -> (1, 'user1', '0001', 'normal', 'hash1', 'userlimkokwing@gmail.com'),
+    -> (2, 'user2', '0002', 'normal', 'hash2', 'user2limkokwing@gmail.com'),
+    -> (3, 'user3', '0003', 'normal', 'hash3', 'user3limkokwing@gmail.com'),
+    -> (4, 'user4', '0004', 'normal', 'hash4', 'user4limkokwing@gmail.com'),
+    -> (5, 'user5', '0005', 'admin', 'hash5', 'user5limkokwing@gmail.com'),
+    -> (6, 'user6', '0006', 'normal', 'hash6', 'user6limkokwing@gmail.com'),
+    -> (7, 'user7', '0007', 'normal', 'hash7', 'user7limkokwing@gmail.com'),
+    -> (8, 'user8', '0008', 'moderator', 'hash8', 'user8limkokwing@gmail.com'),
+    -> (9, 'user9', '0009', 'normal', 'hash9', 'user9limkokwing@gmail.com'),
+    -> (10, 'user10', '00010', 'admin', 'hash10', 'user10limkokwing@gmail.com');
+Query OK, 10 rows affected (0.21 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+mysql> select*from useraccounts;
++--------+----------+----------+-----------+--------------+----------------------------+
+| UserID | Username | Password | Role      | PasswordHash | Email                      |
++--------+----------+----------+-----------+--------------+----------------------------+
+|      1 | user1    | 0001     | normal    | hash1        | userlimkokwing@gmail.com   |
+|      2 | user2    | 0002     | normal    | hash2        | user2limkokwing@gmail.com  |
+|      3 | user3    | 0003     | normal    | hash3        | user3limkokwing@gmail.com  |
+|      4 | user4    | 0004     | normal    | hash4        | user4limkokwing@gmail.com  |
+|      5 | user5    | 0005     | admin     | hash5        | user5limkokwing@gmail.com  |
+|      6 | user6    | 0006     | normal    | hash6        | user6limkokwing@gmail.com  |
+|      7 | user7    | 0007     | normal    | hash7        | user7limkokwing@gmail.com  |
+|      8 | user8    | 0008     | moderator | hash8        | user8limkokwing@gmail.com  |
+|      9 | user9    | 0009     | normal    | hash9        | user9limkokwing@gmail.com  |
+|     10 | user10   | 00010    | admin     | hash10       | user10limkokwing@gmail.com |
++--------+----------+----------+-----------+--------------+----------------------------+
+10 rows in set (0.06 sec)
+
+mysql> CREATE VIEW AdminUsers AS
+    -> SELECT UserID, Username, Email, Role
+    -> FROM useraccounts
+    -> WHERE Role = 'admin';
+Query OK, 0 rows affected (0.95 sec)
+
+mysql> select*from AdminUsers;
++--------+----------+----------------------------+-------+
+| UserID | Username | Email                      | Role  |
++--------+----------+----------------------------+-------+
+|      5 | user5    | user5limkokwing@gmail.com  | admin |
+|     10 | user10   | user10limkokwing@gmail.com | admin |
++--------+----------+----------------------------+-------+
+2 rows in set (0.25 sec)
+
+mysql> CREATE VIEW NormalAndModeratorUsers AS
+    -> SELECT UserID, Username, Email, Role
+    -> FROM useraccounts
+    -> WHERE Role IN ('normal', 'moderator');
+Query OK, 0 rows affected (0.53 sec)
+
+mysql> SELECT * FROM NormalAndModeratorUsers;
++--------+----------+---------------------------+-----------+
+| UserID | Username | Email                     | Role      |
++--------+----------+---------------------------+-----------+
+|      1 | user1    | userlimkokwing@gmail.com  | normal    |
+|      2 | user2    | user2limkokwing@gmail.com | normal    |
+|      3 | user3    | user3limkokwing@gmail.com | normal    |
+|      4 | user4    | user4limkokwing@gmail.com | normal    |
+|      6 | user6    | user6limkokwing@gmail.com | normal    |
+|      7 | user7    | user7limkokwing@gmail.com | normal    |
+|      8 | user8    | user8limkokwing@gmail.com | moderator |
+|      9 | user9    | user9limkokwing@gmail.com | normal    |
++--------+----------+---------------------------+-----------+
+8 rows in set (0.04 sec)
+
+mysql> CREATE TABLE password_changes (
+    ->     UserID INT,
+    ->     OldPassword VARCHAR(255),
+    ->     NewPassword VARCHAR(255),
+    ->     ChangedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (3.80 sec)
+
+mysql>
+mysql> DELIMITER //
+mysql>
+mysql> CREATE TRIGGER after_password_update
+    -> AFTER UPDATE ON useraccounts
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF OLD.Password <> NEW.Password THEN
+    ->         INSERT INTO password_changes (UserID, OldPassword, NewPassword)
+    ->         VALUES (OLD.UserID, OLD.Password, NEW.Password);
+    ->     END IF;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.73 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER //
+mysql>
+mysql> CREATE TRIGGER prevent_admin_downgrade
+    -> BEFORE UPDATE ON useraccounts
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF OLD.Role = 'admin' AND NEW.Role <> 'admin' THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Cannot downgrade an admin user!';
+    ->     END IF;
+    -> END;
+    -> //
+Query OK, 0 rows affected (1.12 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER //
+mysql>
+mysql> CREATE TRIGGER before_insert_check_email
+    -> BEFORE INSERT ON useraccounts
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.Email NOT LIKE '%@%' THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Invalid email format!';
+    ->     END IF;
+    -> END;
+    -> //
+Query OK, 0 rows affected (4.47 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER //CREATE TRIGGER before_insert_hash_passwordBEFORE INSERT ON useraccountsFOR EACH ROWBEGIN    SET NEW.PasswordHash = SHA2(NEW.Password, 256);END;//DELIMITER ;
+mysql> DELIMITER //
+mysql>
+mysql> CREATE TRIGGER before_insert_hash_password
+    -> BEFORE INSERT ON useraccounts
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     SET NEW.PasswordHash = SHA2(NEW.Password, 256);
+    -> END;
+    -> //
+Query OK, 0 rows affected (4.50 sec)
+
+mysql>
+mysql> DELIMITER ;
+
+
+mysql> CREATE FUNCTION GetUserRole(user_id INT)
+    -> RETURNS VARCHAR(50) DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE user_role VARCHAR(50);
+    ->     SELECT Role INTO user_role FROM useraccounts WHERE UserID = user_id;
+    ->     RETURN user_role;
+    -> END;
+    -> //
+Query OK, 0 rows affected (3.75 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> SELECT GetUserRole(5);
++----------------+
+| GetUserRole(5) |
++----------------+
+| admin          |
++----------------+
+1 row in set (0.74 sec)
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE FUNCTION EmailExists(email_check VARCHAR(255))
+    -> RETURNS BOOLEAN DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE exists_flag INT;
+    ->     SELECT COUNT(*) INTO exists_flag FROM useraccounts WHERE Email = email_check;
+    ->     RETURN exists_flag > 0;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.59 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> SELECT EmailExists('user5limkokwing@gmai.com');
++-----------------------------------------+
+| EmailExists('user5limkokwing@gmai.com') |
++-----------------------------------------+
+|                                       0 |
++-----------------------------------------+
+1 row in set (0.14 sec)
+
+mysql> SELECT EmailExists('unknown@gmail.com');
++----------------------------------+
+| EmailExists('unknown@gmail.com') |
++----------------------------------+
+|                                0 |
++----------------------------------+
+1 row in set (0.00 sec)
+
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE AddUser(
+    ->     IN p_Username VARCHAR(255),
+    ->     IN p_Password VARCHAR(255),
+    ->     IN p_Role VARCHAR(50),
+    ->     IN p_Email VARCHAR(255)
+    -> )
+    -> BEGIN
+    ->     INSERT INTO useraccounts (Username, Password, Role, PasswordHash, Email)
+    ->     VALUES (p_Username, p_Password, p_Role, SHA2(p_Password, 256), p_Email);
+    -> END;
+    -> //
+Query OK, 0 rows affected (1.28 sec)
+
+CREATE USER 'user1'@'localhost' IDENTIFIED BY 'password1';
+Query OK, 0 rows affected (0.12 sec)
+
+
+
+
+mysql> CREATE USER 'user2'@'localhost' IDENTIFIED BY 'password2';
+Query OK, 0 rows affected (0.12 sec)
+
+
+
+
+mysql> FLUSH privileges;
+Query OK, 0 rows affected (0.27 sec)
+
+mysql> show privileges;
++------------------------------+---------------------------------------+-------------------------------------------------------+
+| Privilege                    | Context                               | Comment                                               |
++------------------------------+---------------------------------------+-------------------------------------------------------+
+| Alter                        | Tables                                | To alter the table                                    |
+| Alter routine                | Functions,Procedures                  | To alter or drop stored functions/procedures          |
+| Create                       | Databases,Tables,Indexes              | To create new databases and tables                    |
+| Create routine               | Databases                             | To use CREATE FUNCTION/PROCEDURE                      |
+| Create role                  | Server Admin                          | To create new roles                                   |
+| Create temporary tables      | Databases                             | To use CREATE TEMPORARY TABLE                         |
+| Create view                  | Tables                                | To create new views                                   |
+| Create user                  | Server Admin                          | To create new users                                   |
+| Delete                       | Tables                                | To delete existing rows                               |
+| Drop                         | Databases,Tables                      | To drop databases, tables, and views                  |
+| Drop role                    | Server Admin                          | To drop roles                                         |
+| Event                        | Server Admin                          | To create, alter, drop and execute events             |
+| Execute                      | Functions,Procedures                  | To execute stored routines                            |
+| File                         | File access on server                 | To read and write files on the server                 |
+| Grant option                 | Databases,Tables,Functions,Procedures | To give to other users those privileges you possess   |
+| Index                        | Tables                                | To create or drop indexes                             |
+| Insert                       | Tables                                | To insert data into tables                            |
+| Lock tables                  | Databases                             | To use LOCK TABLES (together with SELECT privilege)   |
+| Process                      | Server Admin                          | To view the plain text of currently executing queries |
+| Proxy                        | Server Admin                          | To make proxy user possible                           |
+| References                   | Databases,Tables                      | To have references on tables                          |
+| Reload                       | Server Admin                          | To reload or refresh tables, logs and privileges      |
+| Replication client           | Server Admin                          | To ask where the slave or master servers are          |
+| Replication slave            | Server Admin                          | To read binary log events from the master             |
+| Select                       | Tables                                | To retrieve rows from table                           |
+| Show databases               | Server Admin                          | To see all databases with SHOW DATABASES              |
+| Show view                    | Tables                                | To see views with SHOW CREATE VIEW                    |
+| Shutdown                     | Server Admin                          | To shut down the server                               |
+| Super                        | Server Admin                          | To use KILL thread, SET GLOBAL, CHANGE MASTER, etc.   |
+| Trigger                      | Tables                                | To use triggers                                       |
+| Create tablespace            | Server Admin                          | To create/alter/drop tablespaces                      |
+| Update                       | Tables                                | To update existing rows                               |
+| Usage                        | Server Admin                          | No privileges - allow connect only                    |
+| ENCRYPTION_KEY_ADMIN         | Server Admin                          |                                                       |
+| INNODB_REDO_LOG_ARCHIVE      | Server Admin                          |                                                       |
+| RESOURCE_GROUP_USER          | Server Admin                          |                                                       |
+| FIREWALL_EXEMPT              | Server Admin                          |                                                       |
+| SET_USER_ID                  | Server Admin                          |                                                       |
+| SERVICE_CONNECTION_ADMIN     | Server Admin                          |                                                       |
+| GROUP_REPLICATION_ADMIN      | Server Admin                          |                                                       |
+| AUDIT_ABORT_EXEMPT           | Server Admin                          |                                                       |
+| GROUP_REPLICATION_STREAM     | Server Admin                          |                                                       |
+| CLONE_ADMIN                  | Server Admin                          |                                                       |
+| SYSTEM_USER                  | Server Admin                          |                                                       |
+| AUTHENTICATION_POLICY_ADMIN  | Server Admin                          |                                                       |
+| SHOW_ROUTINE                 | Server Admin                          |                                                       |
+| BACKUP_ADMIN                 | Server Admin                          |                                                       |
+| CONNECTION_ADMIN             | Server Admin                          |                                                       |
+| PERSIST_RO_VARIABLES_ADMIN   | Server Admin                          |                                                       |
+| RESOURCE_GROUP_ADMIN         | Server Admin                          |                                                       |
+| SESSION_VARIABLES_ADMIN      | Server Admin                          |                                                       |
+| SYSTEM_VARIABLES_ADMIN       | Server Admin                          |                                                       |
+| APPLICATION_PASSWORD_ADMIN   | Server Admin                          |                                                       |
+| FLUSH_OPTIMIZER_COSTS        | Server Admin                          |                                                       |
+| AUDIT_ADMIN                  | Server Admin                          |                                                       |
+| BINLOG_ADMIN                 | Server Admin                          |                                                       |
+| BINLOG_ENCRYPTION_ADMIN      | Server Admin                          |                                                       |
+| FLUSH_STATUS                 | Server Admin                          |                                                       |
+| FLUSH_TABLES                 | Server Admin                          |                                                       |
+| FLUSH_USER_RESOURCES         | Server Admin                          |                                                       |
+| REPLICATION_APPLIER          | Server Admin                          |                                                       |
+| INNODB_REDO_LOG_ENABLE       | Server Admin                          |                                                       |
+| XA_RECOVER_ADMIN             | Server Admin                          |                                                       |
+| PASSWORDLESS_USER_ADMIN      | Server Admin                          |                                                       |
+| TABLE_ENCRYPTION_ADMIN       | Server Admin                          |                                                       |
+| ROLE_ADMIN                   | Server Admin                          |                                                       |
+| REPLICATION_SLAVE_ADMIN      | Server Admin                          |                                                       |
+| SENSITIVE_VARIABLES_OBSERVER | Server Admin                          |                                                       |
+| TELEMETRY_LOG_ADMIN          | Server Admin                          |                                                       |
++------------------------------+---------------------------------------+-------------------------------------------------------+
+69 rows in set (0.00 sec)
+
+
+mysql> CREATE VIEW HighExtraHours AS
+    -> SELECT PersonID, ExtraHours
+    -> FROM PartTimeEmployee
+    -> WHERE ExtraHours > 15;
+Query OK, 0 rows affected (4.22 sec)
+
+mysql> CREATE VIEW LowExtraHours AS
+    -> SELECT PersonID, ExtraHours
+    -> FROM PartTimeEmployee
+    -> WHERE ExtraHours <= 15;
+Query OK, 0 rows affected (1.65 sec)
+
+mysql> SELECT * FROM HighExtraHours;
++----------+------------+
+| PersonID | ExtraHours |
++----------+------------+
+|        4 |         20 |
+|        6 |         18 |
+|        8 |         22 |
+|       10 |         16 |
++----------+------------+
+4 rows in set (7.52 sec)
+
+mysql> SELECT * FROM LowExtraHours;
++----------+------------+
+| PersonID | ExtraHours |
++----------+------------+
+|        1 |         10 |
+|        2 |         15 |
+|        3 |          8 |
+|        5 |         12 |
+|        7 |         14 |
+|        9 |          9 |
++----------+------------+
+6 rows in set (0.61 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS DeletedPartTimeEmployee (
+    ->     PersonID INT,
+    ->     ExtraHours INT,
+    ->     DeletedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (8.20 sec)
+
+
+mysql> CREATE TRIGGER before_delete_parttime
+    -> BEFORE DELETE ON PartTimeEmployee
+    -> FOR EACH ROW
+    -> INSERT INTO DeletedPartTimeEmployee (PersonID, ExtraHours)
+    -> VALUES (OLD.PersonID, OLD.ExtraHours);
+Query OK, 0 rows affected (1.51 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS ExtraHoursAudit (
+    ->     PersonID INT,
+    ->     OldExtraHours INT,
+    ->     NewExtraHours INT,
+    ->     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (1.47 sec)
+
+
+mysql> CREATE TRIGGER after_update_extra_hours
+    -> AFTER UPDATE ON PartTimeEmployee
+    -> FOR EACH ROW
+    -> INSERT INTO ExtraHoursAudit (PersonID, OldExtraHours, NewExtraHours)
+    -> VALUES (OLD.PersonID, OLD.ExtraHours, NEW.ExtraHours);
+Query OK, 0 rows affected (1.47 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS InsertedPartTimeEmployee (
+    ->     PersonID INT,
+    ->     ExtraHours INT,
+    ->     InsertedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (2.11 sec)
+
+
+mysql> CREATE TRIGGER after_insert_parttime
+    -> AFTER INSERT ON PartTimeEmployee
+    -> FOR EACH ROW
+    -> INSERT INTO InsertedPartTimeEmployee (PersonID, ExtraHours)
+    -> VALUES (NEW.PersonID, NEW.ExtraHours);
+Query OK, 0 rows affected (0.85 sec)
+
+mysql> DELIMITER //
+mysql> CREATE FUNCTION GetTotalExtraHours()
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE total_hours INT;
+    ->     SELECT SUM(ExtraHours) INTO total_hours FROM PartTimeEmployee;
+    ->     RETURN total_hours;
+    -> END //
+Query OK, 0 rows affected (4.89 sec)
+
+
+mysql> DELIMITER ;
+mysql> SELECT GetTotalExtraHours();
++----------------------+
+| GetTotalExtraHours() |
++----------------------+
+|                  144 |
++----------------------+
+1 row in set (0.81 sec)
+
+mysql> DELIMITER //
+mysql> CREATE FUNCTION GetExtraHoursByPerson(p_PersonID INT)
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE extra_hours INT;
+    ->     SELECT ExtraHours INTO extra_hours FROM PartTimeEmployee WHERE PersonID = p_PersonID;
+    ->     RETURN extra_hours;
+    -> END //
+Query OK, 0 rows affected (0.51 sec)
+
+mysql> DELIMITER ;
+mysql> SELECT GetExtraHoursByPerson(3);
++--------------------------+
+| GetExtraHoursByPerson(3) |
++--------------------------+
+|                        8 |
++--------------------------+
+1 row in set (0.31 sec)
+
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE AddPartTimeEmployee(
+    ->     IN p_PersonID INT,
+    ->     IN p_ExtraHours INT
+    -> )
+    -> BEGIN
+    ->     INSERT INTO PartTimeEmployee (PersonID, ExtraHours)
+    ->     VALUES (p_PersonID, p_ExtraHours);
+    -> END //
+Query OK, 0 rows affected (0.29 sec)
+
+
+mysql> DELIMITER ;
+mysql> CALL AddPartTimeEmployee(11, 12);
+Query OK, 1 row affected (0.99 sec)
+
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE UpdateExtraHours(
+    ->     IN p_PersonID INT,
+    ->     IN p_NewExtraHours INT
+    -> )
+    -> BEGIN
+    ->     UPDATE PartTimeEmployee
+    ->     SET ExtraHours = p_NewExtraHours
+    ->     WHERE PersonID = p_PersonID;
+    -> END //
+Query OK, 0 rows affected (0.42 sec)
+
+
+mysql> DELIMITER ;
+mysql> CALL UpdateExtraHours(5, 18);
+Query OK, 1 row affected (0.49 sec)
+
+mysql> select*from PermanentEmployee;
++----------+------------+--------+
+| PersonID | ExtraBonus | Credit |
++----------+------------+--------+
+|        1 |     500.00 | 300.00 |
+|        2 |     750.50 | 425.00 |
+|        3 |     600.00 | 350.00 |
+|        4 |     800.75 | 500.00 |
+|        5 |     900.00 | 550.00 |
+|        6 |     650.25 | 375.75 |
+|        7 |     720.00 | 400.00 |
+|        8 |     850.50 | 450.00 |
+|        9 |     700.00 | 380.00 |
+|       10 |     950.00 | 600.00 |
++----------+------------+--------+
+10 rows in set (1.24 sec)
+
+mysql> CREATE VIEW HighBonusEmployees AS
+    -> SELECT PersonID, ExtraBonus, Credit
+    -> FROM PermanentEmployee
+    -> WHERE ExtraBonus > 750;
+Query OK, 0 rows affected (2.07 sec)
+
+mysql> SELECT * FROM HighBonusEmployees;
++----------+------------+--------+
+| PersonID | ExtraBonus | Credit |
++----------+------------+--------+
+|        2 |     750.50 | 425.00 |
+|        4 |     800.75 | 500.00 |
+|        5 |     900.00 | 550.00 |
+|        8 |     850.50 | 450.00 |
+|       10 |     950.00 | 600.00 |
++----------+------------+--------+
+5 rows in set (0.11 sec)
+
+mysql> CREATE VIEW EmployeeCreditSummary AS
+    -> SELECT PersonID,
+    ->        ExtraBonus AS BonusAmount,
+    ->        Credit AS CreditBalance
+    -> FROM PermanentEmployee;
+Query OK, 0 rows affected (0.29 sec)
+
+mysql> SELECT * FROM EmployeeCreditSummary;
++----------+-------------+---------------+
+| PersonID | BonusAmount | CreditBalance |
++----------+-------------+---------------+
+|        1 |      500.00 |        300.00 |
+|        2 |      750.50 |        425.00 |
+|        3 |      600.00 |        350.00 |
+|        4 |      800.75 |        500.00 |
+|        5 |      900.00 |        550.00 |
+|        6 |      650.25 |        375.75 |
+|        7 |      720.00 |        400.00 |
+|        8 |      850.50 |        450.00 |
+|        9 |      700.00 |        380.00 |
+|       10 |      950.00 |        600.00 |
++----------+-------------+---------------+
+10 rows in set (0.00 sec)
+
+mysql> CREATE TABLE DeletedPermanentEmployees (
+    ->     PersonID INT,
+    ->     ExtraBonus DECIMAL(10,2),
+    ->     Credit DECIMAL(10,2),
+    ->     DeletedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (4.06 sec)
+
+
+mysql> DELIMITER //
+mysql> CREATE TRIGGER BeforeDeletePermanentEmployee
+    -> BEFORE DELETE ON PermanentEmployee
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO DeletedPermanentEmployees (PersonID, ExtraBonus, Credit)
+    ->     VALUES (OLD.PersonID, OLD.ExtraBonus, OLD.Credit);
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.87 sec)
+
+mysql> DELIMITER ;
+mysql> DELIMITER //
+mysql> CREATE TRIGGER PreventHighBonusDeletion
+    -> BEFORE DELETE ON PermanentEmployee
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF OLD.ExtraBonus > 800 THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Deletion not allowed for employees with ExtraBonus greater than 800';
+    ->     END IF;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.36 sec)
+
+mysql> DELIMITER ;
+mysql> DELIMITER //
+mysql> CREATE TRIGGER UpdateCreditOnBonusIncrease
+    -> BEFORE UPDATE ON PermanentEmployee
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.ExtraBonus > OLD.ExtraBonus THEN
+    ->         SET NEW.Credit = OLD.Credit + (NEW.ExtraBonus - OLD.ExtraBonus) * 0.10;
+    ->     END IF;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> DELIMITER ;
+mysql> CREATE TABLE PermanentEmployeeUpdateLog (
+    ->     LogID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     PersonID INT,
+    ->     OldExtraBonus DECIMAL(10,2),
+    ->     NewExtraBonus DECIMAL(10,2),
+    ->     OldCredit DECIMAL(10,2),
+    ->     NewCredit DECIMAL(10,2),
+    ->     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (1.28 sec)
+
+
+mysql> DELIMITER //
+mysql> CREATE TRIGGER LogPermanentEmployeeUpdates
+    -> AFTER UPDATE ON PermanentEmployee
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO PermanentEmployeeUpdateLog (PersonID, OldExtraBonus, NewExtraBonus, OldCredit, NewCredit)
+    ->     VALUES (OLD.PersonID, OLD.ExtraBonus, NEW.ExtraBonus, OLD.Credit, NEW.Credit);
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.15 sec)
+
+mysql> DELIMITER ;
+mysql> DELIMITER //
+mysql> CREATE TRIGGER SetCreditOnInsert
+    -> BEFORE INSERT ON PermanentEmployee
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     SET NEW.Credit = NEW.ExtraBonus * 0.50;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.29 sec)
+
+mysql> DELIMITER ;
+mysql> CREATE TABLE NewPermanentEmployees (
+    ->     PersonID INT,
+    ->     ExtraBonus DECIMAL(10,2),
+    ->     Credit DECIMAL(10,2),
+    ->     InsertedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (1.25 sec)
+
+
+mysql> DELIMITER //
+mysql> CREATE TRIGGER LogNewPermanentEmployee
+    -> AFTER INSERT ON PermanentEmployee
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO NewPermanentEmployees (PersonID, ExtraBonus, Credit)
+    ->     VALUES (NEW.PersonID, NEW.ExtraBonus, NEW.Credit);
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> DELIMITER ;
+
+
+mysql> select*from Organization;
++-------+----------------------+-----------------------+----------+--------------+
+| OrgID | Name                 | Address               | Phone    | BudgetNumber |
++-------+----------------------+-----------------------+----------+--------------+
+|     1 | TechCorp             | 100 Tech Way          | 555-1111 | BUD001       |
+|     2 | HealthInc            | 200 Wellness Ave      | 555-2222 | BUD002       |
+|     3 | EduWorld             | 300 Learning Blvd     | 555-3333 | BUD003       |
+|     4 | Retailers            | 400 Commerce St       | 555-4444 | BUD004       |
+|     5 | FinancePlus          | 500 Money Ln          | 555-5555 | BUD005       |
+|     6 | AutoMakers           | 600 Motor Pkwy        | 555-6666 | BUD006       |
+|     7 | Foodies              | 700 Gourmet Rd        | 555-7777 | BUD007       |
+|     8 | BuildIt              | 800 Construction Blvd | 555-8888 | BUD008       |
+|     9 | MediaWorks           | 900 Broadcast Ave     | 555-9999 | BUD009       |
+|    10 | TravelCo             | 1010 Journey St       | 555-0000 | BUD010       |
+|    11 | Lesotho Telecom      | Maseru, Lesotho       | 555-0101 | BUD-LT-01    |
+|    12 | Basotho Mining       | Berea, Lesotho        | 555-0102 | BUD-BM-02    |
+|    13 | Maseru Tech          | Maseru, Lesotho       | 555-0103 | BUD-MT-03    |
+|    14 | Lesotho Energy       | Mokhotlong, Lesotho   | 555-0104 | BUD-LE-04    |
+|    15 | Basotho Finance      | Leribe, Lesotho       | 555-0105 | BUD-BF-05    |
+|    16 | Lesotho Agriculture  | Mafeteng, Lesotho     | 555-0106 | BUD-LA-06    |
+|    17 | Basotho Tourism      | Qacha's Nek, Lesotho  | 555-0107 | BUD-BT-07    |
+|    18 | Maseru Healthcare    | Maseru, Lesotho       | 555-0108 | BUD-MH-08    |
+|    19 | Basotho Education    | Leribe, Lesotho       | 555-0109 | BUD-BE-09    |
+|    20 | Lesotho Construction | Butha-Buthe, Lesotho  | 555-0110 | BUD-LC-10    |
++-------+----------------------+-----------------------+----------+--------------+
+20 rows in set (0.10 sec)
+
+mysql> CREATE VIEW GlobalOrganizations AS
+    -> SELECT OrgID, Name, Address, Phone, BudgetNumber
+    -> FROM Organization
+    -> WHERE Address NOT LIKE '%, Lesotho';
+Query OK, 0 rows affected (0.27 sec)
+
+mysql> CREATE VIEW LesothoOrganizations AS
+    -> SELECT OrgID, Name, Address, Phone, BudgetNumber
+    -> FROM Organization
+    -> WHERE Address LIKE '%, Lesotho';
+Query OK, 0 rows affected (0.17 sec)
+
+mysql> SELECT * FROM GlobalOrganizations;
++-------+-------------+-----------------------+----------+--------------+
+| OrgID | Name        | Address               | Phone    | BudgetNumber |
++-------+-------------+-----------------------+----------+--------------+
+|     1 | TechCorp    | 100 Tech Way          | 555-1111 | BUD001       |
+|     2 | HealthInc   | 200 Wellness Ave      | 555-2222 | BUD002       |
+|     3 | EduWorld    | 300 Learning Blvd     | 555-3333 | BUD003       |
+|     4 | Retailers   | 400 Commerce St       | 555-4444 | BUD004       |
+|     5 | FinancePlus | 500 Money Ln          | 555-5555 | BUD005       |
+|     6 | AutoMakers  | 600 Motor Pkwy        | 555-6666 | BUD006       |
+|     7 | Foodies     | 700 Gourmet Rd        | 555-7777 | BUD007       |
+|     8 | BuildIt     | 800 Construction Blvd | 555-8888 | BUD008       |
+|     9 | MediaWorks  | 900 Broadcast Ave     | 555-9999 | BUD009       |
+|    10 | TravelCo    | 1010 Journey St       | 555-0000 | BUD010       |
++-------+-------------+-----------------------+----------+--------------+
+10 rows in set (0.02 sec)
+
+mysql> SELECT * FROM LesothoOrganizations;
++-------+----------------------+----------------------+----------+--------------+
+| OrgID | Name                 | Address              | Phone    | BudgetNumber |
++-------+----------------------+----------------------+----------+--------------+
+|    11 | Lesotho Telecom      | Maseru, Lesotho      | 555-0101 | BUD-LT-01    |
+|    12 | Basotho Mining       | Berea, Lesotho       | 555-0102 | BUD-BM-02    |
+|    13 | Maseru Tech          | Maseru, Lesotho      | 555-0103 | BUD-MT-03    |
+|    14 | Lesotho Energy       | Mokhotlong, Lesotho  | 555-0104 | BUD-LE-04    |
+|    15 | Basotho Finance      | Leribe, Lesotho      | 555-0105 | BUD-BF-05    |
+|    16 | Lesotho Agriculture  | Mafeteng, Lesotho    | 555-0106 | BUD-LA-06    |
+|    17 | Basotho Tourism      | Qacha's Nek, Lesotho | 555-0107 | BUD-BT-07    |
+|    18 | Maseru Healthcare    | Maseru, Lesotho      | 555-0108 | BUD-MH-08    |
+|    19 | Basotho Education    | Leribe, Lesotho      | 555-0109 | BUD-BE-09    |
+|    20 | Lesotho Construction | Butha-Buthe, Lesotho | 555-0110 | BUD-LC-10    |
++-------+----------------------+----------------------+----------+--------------+
+10 rows in set (0.01 sec)
+
+mysql> DELIMITER $$
+mysql> CREATE TRIGGER Before_Delete_Org
+    -> BEFORE DELETE ON Organization
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO Organization_Audit (OrgID, Name, Address, Phone, BudgetNumber, ActionType, ActionTime)
+    ->     VALUES (OLD.OrgID, OLD.Name, OLD.Address, OLD.Phone, OLD.BudgetNumber, 'DELETE', NOW());
+    -> END $$
+Query OK, 0 rows affected (0.35 sec)
+
+
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql> CREATE TRIGGER Prevent_Lesotho_Delete
+    -> BEFORE DELETE ON Organization
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF OLD.Address LIKE '%, Lesotho' THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Deletion of Lesotho-based organizations is not allowed.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.17 sec)
+
+
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql> CREATE TRIGGER After_Update_Org
+    -> AFTER UPDATE ON Organization
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO Organization_Audit (OrgID, Name, Address, Phone, BudgetNumber, ActionType, ActionTime)
+    ->     VALUES (NEW.OrgID, NEW.Name, NEW.Address, NEW.Phone, NEW.BudgetNumber, 'UPDATE', NOW());
+    -> END $$
+Query OK, 0 rows affected (0.11 sec)
+
+
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql> CREATE TRIGGER Prevent_Duplicate_BudgetNumber
+    -> BEFORE UPDATE ON Organization
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     DECLARE countBudget INT;
+    ->     SELECT COUNT(*) INTO countBudget FROM Organization WHERE BudgetNumber = NEW.BudgetNumber AND OrgID != OLD.OrgID;
+    ->     IF countBudget > 0 THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'BudgetNumber must be unique.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.18 sec)
+
+
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql> CREATE TRIGGER Before_Insert_Org
+    -> BEFORE INSERT ON Organization
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.BudgetNumber IS NULL OR NEW.BudgetNumber = '' THEN
+    ->         SET NEW.BudgetNumber = CONCAT('BUD-', NEW.OrgID);
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.39 sec)
+
+
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql> CREATE TRIGGER Prevent_Duplicate_OrgName
+    -> BEFORE INSERT ON Organization
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     DECLARE countOrg INT;
+    ->     SELECT COUNT(*) INTO countOrg FROM Organization WHERE Name = NEW.Name;
+    ->     IF countOrg > 0 THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Organization name must be unique.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.19 sec)
+
+
+
+
+mysql> select*from Position;
++------------+----------------------------+-------+----------+------------+------------+--------------+
+| PositionID | Title                      | OrgID | Salary   | StartDate  | EndDate    | EmploymentID |
++------------+----------------------------+-------+----------+------------+------------+--------------+
+|          1 | Software Engineer          |     1 | 70000.00 | 2010-01-15 | 2015-12-31 |            1 |
+|          2 | Data Analyst               |     2 | 65000.00 | 2012-03-01 | NULL       |            2 |
+|          3 | Project Manager            |     3 | 80000.00 | 2015-07-20 | NULL       |            3 |
+|          4 | Sales Executive            |     4 | 55000.00 | 2008-05-10 | 2012-10-05 |            4 |
+|          5 | Marketing Specialist       |     5 | 60000.00 | 2018-09-01 | NULL       |            5 |
+|          6 | Financial Analyst          |     6 | 72000.00 | 2011-11-11 | 2016-08-08 |            6 |
+|          7 | HR Manager                 |     7 | 68000.00 | 2005-04-22 | 2010-03-15 |            7 |
+|          8 | Operations Manager         |     8 | 75000.00 | 2020-01-01 | NULL       |            8 |
+|          9 | UX Designer                |     9 | 67000.00 | 2017-06-14 | NULL       |            9 |
+|         10 | Quality Assurance          |    10 | 64000.00 | 2013-02-27 | 2018-12-31 |           10 |
+|         11 | Software Engineer          |     1 | 75000.00 | 2020-01-15 | 2021-12-31 |           11 |
+|         12 | Data Scientist             |     2 | 80000.00 | 2021-04-01 | NULL       |           12 |
+|         13 | Project Manager            |     3 | 90000.00 | 2022-06-15 | 2023-06-15 |           13 |
+|         14 | Business Analyst           |     4 | 70000.00 | 2019-08-01 | 2020-08-01 |           14 |
+|         15 | Marketing Manager          |     5 | 68000.00 | 2018-10-01 | NULL       |           15 |
+|         16 | Accountant                 |     6 | 72000.00 | 2017-05-15 | 2018-05-15 |           16 |
+|         17 | HR Specialist              |     7 | 65000.00 | 2020-12-01 | NULL       |           17 |
+|         18 | Operations Director        |     8 | 85000.00 | 2021-02-01 | 2022-02-01 |           18 |
+|         19 | UX/UI Designer             |     9 | 68000.00 | 2022-03-15 | NULL       |           19 |
+|         20 | Quality Assurance Engineer |    10 | 64000.00 | 2023-04-01 | 2024-04-01 |           20 |
++------------+----------------------------+-------+----------+------------+------------+--------------+
+20 rows in set (0.00 sec)
+
+mysql> CREATE VIEW ActivePositions AS
+    -> SELECT PositionID, Title, OrgID, Salary, StartDate, EndDate, EmploymentID
+    -> FROM Position
+    -> WHERE EndDate IS NULL OR EndDate > CURDATE();
+Query OK, 0 rows affected (0.29 sec)
+
+mysql> CREATE VIEW PastPositions AS
+    -> SELECT PositionID, Title, OrgID, Salary, StartDate, EndDate, EmploymentID
+    -> FROM Position
+    -> WHERE EndDate IS NOT NULL AND EndDate <= CURDATE();
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Before_Delete_Position
+    -> BEFORE DELETE ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO Position_Audit (PositionID, Title, OrgID, Salary, StartDate, EndDate, EmploymentID, ActionType, ActionTime)
+    ->     VALUES (OLD.PositionID, OLD.Title, OLD.OrgID, OLD.Salary, OLD.StartDate, OLD.EndDate, OLD.EmploymentID, 'DELETE', NOW());
+    -> END $$
+Query OK, 0 rows affected (0.48 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Prevent_Active_Position_Delete
+    -> BEFORE DELETE ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF OLD.EndDate IS NULL THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Cannot delete active positions with no end date.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.25 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER After_Update_Position
+    -> AFTER UPDATE ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO Position_Audit (PositionID, Title, OrgID, Salary, StartDate, EndDate, EmploymentID, ActionType, ActionTime)
+    ->     VALUES (NEW.PositionID, NEW.Title, NEW.OrgID, NEW.Salary, NEW.StartDate, NEW.EndDate, NEW.EmploymentID, 'UPDATE', NOW());
+    -> END $$
+Query OK, 0 rows affected (0.22 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Prevent_Salary_Decrease
+    -> BEFORE UPDATE ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.Salary < OLD.Salary THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Salary cannot be decreased.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.39 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Before_Insert_Position
+    -> BEFORE INSERT ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.StartDate < CURDATE() AND NEW.EndDate IS NULL THEN
+    ->         SET NEW.EndDate = CURDATE();
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.19 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER Prevent_Duplicate_Position_Title
+    -> BEFORE INSERT ON Position
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     DECLARE countTitle INT;
+    ->     SELECT COUNT(*) INTO countTitle
+    ->     FROM Position
+    ->     WHERE Title = NEW.Title AND OrgID = NEW.OrgID;
+    ->     IF countTitle > 0 THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Duplicate position title is not allowed within the same organization.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.17 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE FUNCTION GetActivePositionCount(OrgID INT)
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE position_count INT;
+    ->     SELECT COUNT(*) INTO position_count
+    ->     FROM Position
+    ->     WHERE OrgID = OrgID AND (EndDate IS NULL OR EndDate > CURDATE());
+    ->     RETURN position_count;
+    -> END $$
+Query OK, 0 rows affected (0.22 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE FUNCTION GetAverageSalary(OrgID INT)
+    -> RETURNS DECIMAL(10, 2)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE avg_salary DECIMAL(10, 2);
+    ->     SELECT AVG(Salary) INTO avg_salary
+    ->     FROM Position
+    ->     WHERE OrgID = OrgID;
+    ->     RETURN avg_salary;
+    -> END $$
+Query OK, 0 rows affected (0.12 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE AddPosition(
+    ->     IN PositionTitle VARCHAR(255),
+    ->     IN OrganizationID INT,
+    ->     IN PositionSalary DECIMAL(10, 2),
+    ->     IN PositionStartDate DATE,
+    ->     IN PositionEndDate DATE,
+    ->     IN EmploymentID INT
+    -> )
+    -> BEGIN
+    ->     INSERT INTO Position (Title, OrgID, Salary, StartDate, EndDate, EmploymentID)
+    ->     VALUES (PositionTitle, OrganizationID, PositionSalary, PositionStartDate, PositionEndDate, EmploymentID);
+    -> END $$
+Query OK, 0 rows affected (0.21 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE UpdatePositionSalary(
+    ->     IN PositionID INT,
+    ->     IN NewSalary DECIMAL(10, 2)
+    -> )
+    -> BEGIN
+    ->     DECLARE OldSalary DECIMAL(10, 2);
+    ->
+    ->     -- Get the current salary for the position
+    ->     SELECT Salary INTO OldSalary
+    ->     FROM Position
+    ->     WHERE PositionID = PositionID;
+    ->
+    ->     -- Ensure the new salary is greater than the old salary
+    ->     IF NewSalary > OldSalary THEN
+    ->         UPDATE Position
+    ->         SET Salary = NewSalary
+    ->         WHERE PositionID = PositionID;
+    ->     ELSE
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'New salary must be greater than the current salary.';
+    ->     END IF;
+    -> END $$
+Query OK, 0 rows affected (0.21 sec)
+
+mysql>
+mysql> DELIMITER ;
+
+
+mysql> select*from Person;
++----------+------------------+----------------------+----------+------------+
+| PersonID | Name             | Address              | Phone    | BirthDate  |
++----------+------------------+----------------------+----------+------------+
+|        1 | Alice Johnson    | 123 Main St          | 555-1234 | 1985-06-15 |
+|        2 | Bob Smith        | 456 Oak St           | 555-5678 | 1979-08-22 |
+|        3 | Carol White      | 789 Pine St          | 555-9012 | 1990-03-10 |
+|        4 | David Green      | 321 Maple St         | 555-3456 | 1982-11-30 |
+|        5 | Eva Brown        | 654 Elm St           | 555-7890 | 1995-07-25 |
+|        6 | Frank Black      | 987 Cedar St         | 555-2345 | 1988-04-12 |
+|        7 | Grace Adams      | 159 Birch St         | 555-6789 | 1975-09-05 |
+|        8 | Henry Lee        | 753 Walnut St        | 555-0123 | 1980-12-20 |
+|        9 | Ivy Turner       | 852 Spruce St        | 555-4567 | 1992-02-28 |
+|       10 | Jack Hill        | 951 Chestnut St      | 555-8910 | 1983-05-17 |
+|       11 | Lebohang Mokoena | Maseru, Lesotho      | 555-0001 | 1985-01-15 |
+|       12 | Teboho Khaketla  | Mafeteng, Lesotho    | 555-0002 | 1990-05-20 |
+|       13 | Neo Nthabiseng   | Leribe, Lesotho      | 555-0003 | 1982-03-12 |
+|       14 | Tshepo Molapo    | Qacha's Nek, Lesotho | 555-0004 | 1978-11-30 |
+|       15 | Palesa Leshomo   | Mokhotlong, Lesotho  | 555-0005 | 1992-07-22 |
+|       16 | Mpho Motsoeneng  | Maseru, Lesotho      | 555-0006 | 1987-09-05 |
+|       17 | Thato Mofolo     | Berea, Lesotho       | 555-0007 | 1980-12-18 |
+|       18 | Khotso Ramabodu  | Maseru, Lesotho      | 555-0008 | 1995-04-25 |
+|       19 | Sipho Letsooa    | Mafeteng, Lesotho    | 555-0009 | 1983-08-14 |
+|       20 | Lerato Teboho    | Maseru, Lesotho      | 555-0010 | 1991-02-28 |
++----------+------------------+----------------------+----------+------------+
+20 rows in set (0.02 sec)
+
+mysql> CREATE VIEW PersonsBornBefore1980 AS
+    -> SELECT PersonID, Name, Address, Phone, BirthDate
+    -> FROM Person
+    -> WHERE BirthDate < '1980-01-01';
+Query OK, 0 rows affected (0.21 sec)
+
+mysql> CREATE VIEW PersonsFromLesotho AS
+    -> SELECT PersonID, Name, Address, Phone, BirthDate
+    -> FROM Person
+    -> WHERE Address LIKE '%Lesotho%';
+Query OK, 0 rows affected (0.14 sec)
+yntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'END' at line 1
+mysql> CREATE TRIGGER prevent_delete_person_with_phone
+    -> BEFORE DELETE ON Person
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF OLD.Phone LIKE '555%' THEN
+    ->         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delete person with a phone number starting with 555';
+mysql> CREATE TRIGGER before_person_delete
+    -> BEFORE DELETE ON Person
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     -- Log the deleted person's details (for example, in a log table)
+    ->     INSERT INTO PersonDeleteLog (PersonID, Name, Address, Phone, BirthDate, DeletedAt)
+    ->     VALUES (OLD.PersonID, OLD.Name, OLD.Address, OLD.Phone, OLD.BirthDate, NOW());
+    -> END$$
+Query OK, 0 rows affected (0.38 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER prevent_delete_person_with_phone
+    -> BEFORE DELETE ON Person
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF OLD.Phone LIKE '555%' THEN
+    ->         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delete person with a phone number starting with 555';
+    ->     END IF;
+    -> END$$
+Query OK, 0 rows affected (0.13 sec)
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER after_person_update
+    -> AFTER UPDATE ON Person
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     -- Log changes in a separate audit table (example)
+    ->     INSERT INTO PersonUpdateLog (PersonID, OldName, NewName, OldPhone, NewPhone, UpdatedAt)
+    ->     VALUES (OLD.PersonID, OLD.Name, NEW.Name, OLD.Phone, NEW.Phone, NOW());
+    -> END$$
+Query OK, 0 rows affected (0.20 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER before_person_address_update
+    -> BEFORE UPDATE ON Person
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.Address IS NOT NULL THEN
+    ->         SET NEW.Address = CONCAT(NEW.Address, ' - Updated');
+    ->     END IF;
+    -> END$$
+Query OK, 0 rows affected (0.21 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER after_person_insert
+    -> AFTER INSERT ON Person
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     -- Example: Log the inserted person's details into an audit table
+    ->     INSERT INTO PersonInsertLog (PersonID, Name, Address, Phone, BirthDate, InsertedAt)
+    ->     VALUES (NEW.PersonID, NEW.Name, NEW.Address, NEW.Phone, NEW.BirthDate, NOW());
+    -> END$$
+Query OK, 0 rows affected (0.20 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE TRIGGER log_person_insert
+    -> AFTER INSERT ON Person
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     -- Example: Insert the new person's name and phone number into a logging table
+    ->     INSERT INTO PersonActivityLog (PersonID, Name, Phone, Activity, ActivityDate)
+    ->     VALUES (NEW.PersonID, NEW.Name, NEW.Phone, 'Inserted', NOW());
+    -> END$$
+Query OK, 0 rows affected (0.11 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE FUNCTION GetPersonAge(PersonID INT)
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE person_age INT;
+    ->
+    ->     SELECT TIMESTAMPDIFF(YEAR, BirthDate, CURDATE()) INTO person_age
+    ->     FROM Person
+    ->     WHERE PersonID = PersonID;
+    ->
+    ->     RETURN person_age;
+    -> END$$
+Query OK, 0 rows affected (0.15 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE FUNCTION IsEligibleForSeniorDiscount(PersonID INT)
+    -> RETURNS BOOLEAN
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE person_age INT;
+    ->
+    ->     -- Calculate the person's age
+    ->     SELECT TIMESTAMPDIFF(YEAR, BirthDate, CURDATE()) INTO person_age
+    ->     FROM Person
+    ->     WHERE PersonID = PersonID;
+    ->
+    ->     -- Check if the person is 60 or older
+    ->     IF person_age >= 60 THEN
+    ->         RETURN TRUE;
+    ->     ELSE
+    ->         RETURN FALSE;
+    ->     END IF;
+    -> END$$
+Query OK, 0 rows affected (0.26 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE UpdatePersonAddress(IN p_PersonID INT, IN p_NewAddress VARCHAR(255))
+    -> BEGIN
+    ->     UPDATE Person
+    ->     SET Address = p_NewAddress
+    ->     WHERE PersonID = p_PersonID;
+    -> END$$
+Query OK, 0 rows affected (0.22 sec)
+
+
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE DeletePersonRecord(IN p_PersonID INT)
+    -> BEGIN
+    ->     DELETE FROM Person
+    ->     WHERE PersonID = p_PersonID;
+    -> END$$
+Query OK, 0 rows affected (0.21 sec)
+
+
+
+mysql> CREATE USER 'Tshedi'@'localhost' IDENTIFIED BY '123456';
+Query OK, 0 rows affected (3.42 sec)
+
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'Tshedi'@'localhost';
+Query OK, 0 rows affected (0.74 sec)
+
